@@ -3,8 +3,7 @@ from random import random
 from bs4 import BeautifulSoup
 import httpx
 
-from data_collector.utils import to_df
-from data_collector.user_agents import user_agents
+from data_collector.utils import to_df, user_agents
 
 
 async def scrape():
