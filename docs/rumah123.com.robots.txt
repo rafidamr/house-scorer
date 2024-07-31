@@ -1,0 +1,60 @@
+User-agent: trovitBot
+Disallow: /
+
+User-agent: *
+Disallow: /api
+Disallow: /acc123/
+Disallow: /*/src/client/*
+Disallow: /*.ts
+Disallow: /asset-core/seo-content/
+Disallow: /*/list-iklan-tayang/*
+Disallow: /handpick*
+Disallow: /boxx*
+Disallow: /*/?place*
+Disallow: /*/?sortBy*
+Disallow: /*/?*Price*
+Disallow: /*/?*BuiltupSize*
+Disallow: /*/?*LandArea*
+Disallow: /*/?*furnish[]*
+Disallow: /*/?*certificates[]*
+Disallow: /*/?*inHouseFacilities[]*
+Disallow: /*/?*residentialFacilities[]*
+Disallow: /*/?*MaidBedrooms*
+Disallow: /*/?*bathroom*
+Disallow: /*/?*bedroom*
+Disallow: /*/?*unseen*
+Disallow: /*/?*transactedIncluded*
+Disallow: /*/?*rentPeriod*
+Disallow: /*/?*category=*
+Disallow: /?sortBy*
+Disallow: /?price-unit-type*
+
+Sitemap: https://www.rumah123.com/newsitemap-nsrp.xml
+Sitemap: https://www.rumah123.com/newsitemap-srp-variant.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-ldp-jual.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-ldp-sewa.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-pdp.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-srp-jual.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-srp-sewa.xml
+
+Sitemap: https://www.rumah123.com/newsitemap-srp-poi.xml
+Sitemap: https://www.rumah123.com/newsitemap-srp-price-range.xml
+
+Sitemap: https://www.rumah123.com/panduan-properti/author-sitemap.xml
+Sitemap: https://www.rumah123.com/panduan-properti/category-sitemap.xml
+Sitemap: https://www.rumah123.com/panduan-properti/page-sitemap.xml
+Sitemap: https://www.rumah123.com/panduan-properti/post-sitemap.xml
+Sitemap: https://www.rumah123.com/panduan-properti/post-sitemap2.xml
+
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-agent-srp.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-agent.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-base.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-building-type.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-certificate-variant.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-developer.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-explore.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-floor-variant.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-price-range.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-rent-variant.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-search-alias.xml
+Sitemap: https://www.rumah123.com/sitemap-v3/sitemap-venue.xml
