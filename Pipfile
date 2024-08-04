@@ -14,6 +14,7 @@ scipy = "~=1.14.0"
 numpy = "~=2.0.1"
 googlemaps = "*"
 pydantic = "*"
+folium = "~=0.17.0"
 
 [dev-packages]
 
