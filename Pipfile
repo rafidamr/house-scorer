@@ -8,13 +8,15 @@ jupyterlab = "~=4.2"
 httpx = "~=0.27"
 pandas = "~=2.2"
 beautifulsoup4 = "~=4.12"
-matplotlib = "~=3.9.1"
+matplotlib = "*"
 seaborn = "~=0.13.2"
 scipy = "~=1.14.0"
 numpy = "~=2.0.1"
 googlemaps = "*"
 pydantic = "*"
 folium = "~=0.17.0"
+scikit-learn = "~=1.5.1"
+xgboost = "*"
 
 [dev-packages]
 
