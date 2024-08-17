@@ -1,6 +1,0 @@
-Origin: -6.901369, 107.592217
-Lat after: -6.901775
-Lng after: 107.592523
-
-Lat delta: 0.000406
-Lng delta: 0.000306
