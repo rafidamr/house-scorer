@@ -17,6 +17,7 @@ pydantic = "*"
 folium = "~=0.17.0"
 scikit-learn = "~=1.5.1"
 xgboost = "*"
+joblib = "*"
 
 [dev-packages]
 
