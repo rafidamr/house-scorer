@@ -18,6 +18,10 @@ folium = "~=0.17.0"
 scikit-learn = "~=1.5.1"
 xgboost = "*"
 joblib = "*"
+cupy-cuda12x = "*"
+shapely = "*"
+geopandas = "*"
+branca = "*"
 
 [dev-packages]
 
