@@ -4,6 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+joblib = "*"
+geopandas = "*"
+pydantic = "*"
+streamlit = "~=1.37.1"
+streamlit-folium = "*"
+folium-glify-layer = "*"
+
+[dev-packages]
+googlemaps = "*"
 jupyterlab = "~=4.2"
 httpx = "~=0.27"
 pandas = "~=2.2"
@@ -12,18 +21,13 @@ matplotlib = "*"
 seaborn = "~=0.13.2"
 scipy = "~=1.14.0"
 numpy = "~=2.0.1"
-googlemaps = "*"
-pydantic = "*"
 folium = "~=0.17.0"
 scikit-learn = "~=1.5.1"
 xgboost = "*"
 joblib = "*"
 cupy-cuda12x = "*"
 shapely = "*"
-geopandas = "*"
 branca = "*"
-
-[dev-packages]
 
 [requires]
 python_version = "3.12"
