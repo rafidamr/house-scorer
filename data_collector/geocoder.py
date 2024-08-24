@@ -6,7 +6,7 @@ from .config import config
 
 gmaps = googlemaps.Client(key=config.gmap_api_key)
 
-locations = np.load('files/locations.npy', allow_pickle=True)
+locations = np.load('files/npy/locations_cmh.npy', allow_pickle=True)
 for loc in locations:
     geocode_result = gmaps.geocode(loc)
     area = loc.split(',')[-1].strip()
