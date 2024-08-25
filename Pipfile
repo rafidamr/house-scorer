@@ -10,6 +10,7 @@ pydantic = "*"
 streamlit = "~=1.37.1"
 streamlit-folium = "*"
 folium-glify-layer = "*"
+lonboard = "*"
 
 [dev-packages]
 googlemaps = "*"
