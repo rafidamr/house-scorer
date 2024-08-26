@@ -1,84 +1,55 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {Map} from 'react-map-gl/maplibre';
 import DeckGL from '@deck.gl/react';
-import {GeoJsonLayer, PolygonLayer} from '@deck.gl/layers';
-import {LightingEffect, AmbientLight, _SunLight as SunLight} from '@deck.gl/core';
-import {scaleThreshold} from 'd3-scale';
+import {GeoJsonLayer} from '@deck.gl/layers';
+import {scaleLinear} from 'd3-scale';
+import {MaskExtension} from '@deck.gl/extensions';
 
 import type {Color, Position, PickingInfo, MapViewState} from '@deck.gl/core';
 import type {Feature, Geometry} from 'geojson';
 
 // Source data GeoJSON
-const DATA_URL =
-  'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/geojson/vancouver-blocks.json'; // eslint-disable-line
+const DATA_URL = import.meta.env.VITE_SOURCE_DATA // eslint-disable-line
+const CIRCLE_URL = import.meta.env.VITE_CIRCLE_DATA
 
-export const COLOR_SCALE = scaleThreshold<number, Color>()
-  .domain([-0.6, -0.45, -0.3, -0.15, 0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1.05, 1.2])
-  .range([
-    [65, 182, 196],
-    [127, 205, 187],
-    [199, 233, 180],
-    [237, 248, 177],
-    // zero
-    [255, 255, 204],
-    [255, 237, 160],
-    [254, 217, 118],
-    [254, 178, 76],
-    [253, 141, 60],
-    [252, 78, 42],
-    [227, 26, 28],
-    [189, 0, 38],
-    [128, 0, 38]
+export const COLOR_SCALE = scaleLinear<number, Color>()
+.domain([1e6, 7e6, 2e7, 3.5e7])
+// @ts-ignore
+.range([
+    [208, 255, 143, 150],
+    [255, 191, 54, 150],
+    [255, 0, 0, 150],
+    [0, 0, 0, 150]
   ]);
 
+const VALUE_SCALE = (val: number) => {
+  return Math.max(0, (val - 2.5e6)) / 2e3
+}
+
+const INIT_LAT = -6.9215529
+const INIT_LONG = 107.6110212
 const INITIAL_VIEW_STATE: MapViewState = {
-  latitude: 49.254,
-  longitude: -123.13,
-  zoom: 11,
-  maxZoom: 16,
+  latitude: INIT_LAT,
+  longitude: INIT_LONG,
+  zoom: 10.5,
+  maxZoom: 18,
   pitch: 45,
   bearing: 0
 };
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
-const ambientLight = new AmbientLight({
-  color: [255, 255, 255],
-  intensity: 1.0
-});
-
-const dirLight = new SunLight({
-  timestamp: Date.UTC(2019, 7, 1, 22),
-  color: [255, 255, 255],
-  intensity: 1.0,
-  _shadow: true
-});
-
-const landCover: Position[][] = [
-  [
-    [-123.0, 49.196],
-    [-123.0, 49.324],
-    [-123.306, 49.324],
-    [-123.306, 49.196]
-  ]
-];
-
 type BlockProperties = {
-  valuePerParcel: number;
-  valuePerSqm: number;
-  growth: number;
+  prediction: number;
 };
 
 function getTooltip({object}: PickingInfo<Feature<Geometry, BlockProperties>>) {
   return (
     object && {
       html: `\
-  <div><b>Average Property Value</b></div>
-  <div>${object.properties.valuePerParcel} / parcel</div>
-  <div>${object.properties.valuePerSqm} / m<sup>2</sup></div>
-  <div><b>Growth</b></div>
-  <div>${Math.round(object.properties.growth * 100)}%</div>
+  <div><b>Land Price Prediction</b></div>
+  <div>Rp. ${object.properties.prediction.toLocaleString('id-ID')} / m<sup>2</sup></div>
   `
     }
   );
@@ -91,40 +62,79 @@ export default function App({
   data?: string | Feature<Geometry, BlockProperties>[];
   mapStyle?: string;
 }) {
-  const [effects] = useState(() => {
-    const lightingEffect = new LightingEffect({ambientLight, dirLight});
-    lightingEffect.shadowColor = [0, 0, 0, 0.5];
-    return [lightingEffect];
-  });
+  var [selectedArea, setSelectedArea] = useState<any>();
+
+  useEffect(() => {
+    async function initData() {
+      const response = await fetch(CIRCLE_URL);
+      const file = await response.json();
+      var coor = file.features[0].geometry.coordinates;
+      coor[0] = coor[0].map(x => [x[0] + INIT_LONG, x[1] + INIT_LAT])
+      file.features[0].geometry['cc'] = [INIT_LONG, INIT_LAT]
+      setSelectedArea(file.features[0].geometry)
+    }
+    initData()
+  }, []);
+
+  var updateCircle = (point: any) => {
+    const cc = selectedArea['cc']
+    var area = {...selectedArea}
+    var coor = area.coordinates;
+    console.log(coor[0][0][0])
+    coor[0] = coor[0].map(x => {
+      // console.log(x[1])
+      // return [x[0] - cc[0] + point[0], x[1] - cc[1] + point[1]]
+      return [x[0], x[1]]
+    })
+    area['cc'] = [point[0], point[1]]
+    setSelectedArea(area)
+  }
+
+  try {
+    // console.log(selectedArea.coordinates[0][0][0])
+    // console.log(selectedArea['cc'][0])
+  } catch (error) {
+    console.log(error)
+  }
 
   const layers = [
-    // only needed when using shadows - a plane for shadows to drop on
-    new PolygonLayer<Position[]>({
-      id: 'ground',
-      data: landCover,
-      stroked: false,
-      getPolygon: f => f,
-      getFillColor: [0, 0, 0, 0]
-    }),
     new GeoJsonLayer<BlockProperties>({
-      id: 'geojson',
-      data,
-      opacity: 0.05,
-      stroked: false,
-      filled: true,
+      id: 'flat-area',
+      data: data,
+      material: false,
       extruded: false,
+      getFillColor: [0, 0, 0, 100],
+      pickable: true,
+      autoHighlight: true,
+      highlightColor: [0, 132, 255, 150],
+      onHover: (info, event) => updateCircle(info.coordinate),
+    }),
+    new GeoJsonLayer({
+      id: 'selected-area',
+      data: selectedArea,
+      operation: 'mask',
+    }),
+    new GeoJsonLayer({
+      id: 'extruded-area',
+      data: data,
+      extruded: true,
       wireframe: true,
-      getElevation: f => Math.sqrt(f.properties.valuePerSqm) * 10,
-      getFillColor: f => COLOR_SCALE(f.properties.growth),
-      getLineColor: [255, 255, 255],
-      pickable: true
-    })
+      material: false,
+      getElevation: f => VALUE_SCALE(f.properties.prediction),
+      getFillColor: f => COLOR_SCALE(f.properties.prediction),
+      getLineColor: [255, 255, 255, 0],
+      pickable: true,
+      autoHighlight: true,
+      highlightColor: [0, 132, 255, 150],
+      maskId: 'selected-area',
+      extensions: [new MaskExtension()],
+    }),
   ];
 
   return (
     <DeckGL
       layers={layers}
-      effects={effects}
+      // effects={effects}
       initialViewState={INITIAL_VIEW_STATE}
       controller={true}
       getTooltip={getTooltip}
