@@ -1,9 +1,11 @@
 .vscode
+
 .venv
 node_modules
 __pycache__
 .ipynb_checkpoints
 
+dist
 files
 
 *.ovpn

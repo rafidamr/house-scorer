@@ -1,0 +1,15 @@
+services:
+  webserver:
+    image: asia-southeast1-docker.pkg.dev/auspicious-env-431402-q5/al-bytes-docker/al_bytes--web:v0
+    command: ["/busybox-httpd", "-f", "-v", "-p", "3000", "-c", "httpd.conf"]
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./dist:/home/static
+      - ./busybox/httpd.conf:/home/static/httpd.conf:ro
+    logging:
+        driver: local
+        options:
+          max-size: "10m"
+          max-file: "3"

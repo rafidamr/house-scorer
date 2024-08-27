@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {Helmet} from "react-helmet";
 import {createRoot} from 'react-dom/client';
 import {Map} from 'react-map-gl/maplibre';
 import DeckGL from '@deck.gl/react';
@@ -141,5 +142,14 @@ export default function App({
 }
 
 export function renderToDOM(container: HTMLDivElement) {
-  createRoot(container).render(<App />);
+  createRoot(container).render(
+    <>
+      <Helmet
+        title={`${import.meta.env.VITE_ALBYTES} | Land Price Prediction`}
+        meta={[{ name: 'description', content: 'Land Price Prediction' }]}
+        link={[{ rel: 'icon', href: './assets/favicon.ico' }]}
+      />
+      <App />
+    </>
+  );
 }
