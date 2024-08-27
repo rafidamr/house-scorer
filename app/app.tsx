@@ -4,9 +4,10 @@ import {Map} from 'react-map-gl/maplibre';
 import DeckGL from '@deck.gl/react';
 import {GeoJsonLayer} from '@deck.gl/layers';
 import {scaleLinear} from 'd3-scale';
+import {polygonCentroid} from 'd3-polygon';
 import {MaskExtension} from '@deck.gl/extensions';
 
-import type {Color, Position, PickingInfo, MapViewState} from '@deck.gl/core';
+import type {Color, PickingInfo, MapViewState} from '@deck.gl/core';
 import type {Feature, Geometry} from 'geojson';
 
 // Source data GeoJSON
@@ -17,10 +18,10 @@ export const COLOR_SCALE = scaleLinear<number, Color>()
 .domain([1e6, 7e6, 2e7, 3.5e7])
 // @ts-ignore
 .range([
-    [208, 255, 143, 150],
-    [255, 191, 54, 150],
-    [255, 0, 0, 150],
-    [0, 0, 0, 150]
+    [208, 255, 143, 75],
+    [255, 191, 54, 75],
+    [255, 0, 0, 75],
+    [0, 0, 0, 75]
   ]);
 
 const VALUE_SCALE = (val: number) => {
@@ -68,33 +69,27 @@ export default function App({
     async function initData() {
       const response = await fetch(CIRCLE_URL);
       const file = await response.json();
-      var coor = file.features[0].geometry.coordinates;
-      coor[0] = coor[0].map(x => [x[0] + INIT_LONG, x[1] + INIT_LAT])
-      file.features[0].geometry['cc'] = [INIT_LONG, INIT_LAT]
-      setSelectedArea(file.features[0].geometry)
+      var area = file.features[0].geometry;
+      area['center'] = [0, 0]
+      setSelectedArea(area)
     }
     initData()
   }, []);
 
-  var updateCircle = (point: any) => {
-    const cc = selectedArea['cc']
-    var area = {...selectedArea}
-    var coor = area.coordinates;
-    console.log(coor[0][0][0])
-    coor[0] = coor[0].map(x => {
-      // console.log(x[1])
-      // return [x[0] - cc[0] + point[0], x[1] - cc[1] + point[1]]
-      return [x[0], x[1]]
-    })
-    area['cc'] = [point[0], point[1]]
-    setSelectedArea(area)
-  }
-
-  try {
-    // console.log(selectedArea.coordinates[0][0][0])
-    // console.log(selectedArea['cc'][0])
-  } catch (error) {
-    console.log(error)
+  var updateCircle = (info: PickingInfo) => {
+    try {
+      let area = {...selectedArea}
+      const center = polygonCentroid(info.object.geometry.coordinates[0])
+      const lng_diff = center[0] - area['center'][0]
+      const lat_diff = center[1] - area['center'][1]
+      area.coordinates[0] = area.coordinates[0].map((coor: number[]) => {
+        return [coor[0] + lng_diff, coor[1] + lat_diff]
+      })
+      area['center'] = [center[0], center[1]]
+      setSelectedArea(area)
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   const layers = [
@@ -102,12 +97,11 @@ export default function App({
       id: 'flat-area',
       data: data,
       material: false,
-      extruded: false,
-      getFillColor: [0, 0, 0, 100],
+      getFillColor: f => COLOR_SCALE(f.properties.prediction),
       pickable: true,
       autoHighlight: true,
       highlightColor: [0, 132, 255, 150],
-      onHover: (info, event) => updateCircle(info.coordinate),
+      onClick: (info, _) => updateCircle(info),
     }),
     new GeoJsonLayer({
       id: 'selected-area',
@@ -128,13 +122,15 @@ export default function App({
       highlightColor: [0, 132, 255, 150],
       maskId: 'selected-area',
       extensions: [new MaskExtension()],
+      maskByInstance: true,
+      maskInverted: true,
+      onClick: (info, _) => updateCircle(info),
     }),
   ];
 
   return (
     <DeckGL
       layers={layers}
-      // effects={effects}
       initialViewState={INITIAL_VIEW_STATE}
       controller={true}
       getTooltip={getTooltip}
