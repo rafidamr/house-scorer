@@ -28,7 +28,7 @@ RUN adduser -D static
 # Switch to the scratch image
 FROM scratch
 
-EXPOSE 3000
+EXPOSE 80
 
 # Copy over the user
 COPY --from=builder /etc/passwd /etc/passwd
@@ -43,4 +43,4 @@ WORKDIR /home/static
 COPY ./dist .
 
 # Run busybox httpd
-CMD ["/busybox-httpd", "-f", "-v", "-p", "3000", "-c", "httpd.conf"]
+CMD ["/busybox-httpd", "-f", "-v", "-p", "80", "-c", "httpd.conf"]

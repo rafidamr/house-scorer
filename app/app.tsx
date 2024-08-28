@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Helmet} from "react-helmet";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import {createRoot} from 'react-dom/client';
 import {Map} from 'react-map-gl/maplibre';
 import DeckGL from '@deck.gl/react';
@@ -30,14 +32,14 @@ const VALUE_SCALE = (val: number) => {
 }
 
 const INIT_LAT = -6.9215529
-const INIT_LONG = 107.6110212
+const INIT_LONG = 107.595774
 const INITIAL_VIEW_STATE: MapViewState = {
   latitude: INIT_LAT,
   longitude: INIT_LONG,
   zoom: 10.5,
   maxZoom: 18,
   pitch: 45,
-  bearing: 0
+  bearing: 12.5
 };
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
@@ -59,10 +61,12 @@ function getTooltip({object}: PickingInfo<Feature<Geometry, BlockProperties>>) {
 
 export default function App({
   data = DATA_URL,
-  mapStyle = MAP_STYLE
+  mapStyle = MAP_STYLE,
+  setSpinner
 }: {
   data?: string | Feature<Geometry, BlockProperties>[];
   mapStyle?: string;
+  setSpinner: Function;
 }) {
   var [selectedArea, setSelectedArea] = useState<any>();
 
@@ -135,21 +139,34 @@ export default function App({
       initialViewState={INITIAL_VIEW_STATE}
       controller={true}
       getTooltip={getTooltip}
+      onAfterRender={() => setSpinner(false)}
     >
       <Map reuseMaps mapStyle={mapStyle} />
     </DeckGL>
   );
 }
 
-export function renderToDOM(container: HTMLDivElement) {
-  createRoot(container).render(
+export function AppContainer() {
+  var [spinner, setSpinner] = useState(true);
+
+  return (
     <>
       <Helmet
         title={`${import.meta.env.VITE_ALBYTES} | Land Price Prediction`}
         meta={[{ name: 'description', content: 'Land Price Prediction' }]}
         link={[{ rel: 'icon', href: './assets/favicon.ico' }]}
       />
-      <App />
+      <App setSpinner={setSpinner} />
+      {spinner &&
+        <Box sx={{ position: 'absolute', top: 15, right: 15, textAlign: 'right' }}>
+          <Box sx={{ textAlign: 'right', marginBottom: 1 }}>Loading Data</Box>
+          <CircularProgress color="inherit" size={50} />
+        </Box>
+      }
     </>
   );
+}
+
+export function renderToDOM(container: HTMLDivElement) {
+  createRoot(container).render(<AppContainer />);
 }
